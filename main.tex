@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage[font=bf,figurename=Fig.,justification=centering]{caption}
+\usepackage{graphicx,wrapfig,subcaption,adjustbox,tikz,float,biblatex}
+\usepackage{url}
+
+\bibliography{references.bib}
+
+
+\pagenumbering{roman}
+
+\title{GLMs within Insurance Policy Pricing}
+\author{Luke Dando}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\pagebreak
+\pagenumbering{arabic}
+
+\section{What is risk?}
+Risk is the chance that something harmful or unexpected could occur regarding a held policy. This might involve loss, theft, or damage of valuable property and belongings, or it may involve someone being injured. From a statistical point-of-view risk can be defined as:
+\begin{equation}
+    \tau = \mathbb{E}\left[\frac{L}{e}\right].
+\end{equation}
+Here, $L$ is the loss and $e$ is the exposure of the policy. If we now assume that the frequency of a claim is independent from the severity of it, we find:
+\begin{align}
+    \tau &= \mathbb{E}\left[\frac{L}{e}\right] \\
+    &= \mathbb{E}\left[\left.\frac{L}{N}\right\vert\right]
+\end{align}
+
+\end{document}
