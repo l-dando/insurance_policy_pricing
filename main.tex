@@ -147,7 +147,7 @@ There are three main assumptions that will form the foundation of our model buil
     \item \textbf{Homogeneity:} Consider any two policies with the same exposure and the same 
 \end{itemize}
 
-\subsection{Examples}
+\subsection{Simple examples}
 We will solve simple examples using the same observations previously discussed in sec.~(\ref{sec:vec_not}). The general procedure for solving a GLM involves the following:
 \begin{enumerate}
     \item Specify the matrix $\mathbf{X}$ and the vector of parameters $\underline{\beta}$;
@@ -330,6 +330,9 @@ which results in the following predicted values:
     \caption{Predicted values using the Gamma error structure with inverse link function.}
     \label{fig:covariances_example_3}
 \end{table}
+
+\subsection{Large Datasets and Numerical Techniques}
+As the number of observations being modelled increases, the practicality of finding values of $\underline{\beta}$ which maximize likelihood using an explicit technique becomes less and less. Although there is a general case for solving the GLM problem using an assumed exponential distribution, we will now turn to numerical techniques to aid us in approaching our optimum.
 
 \nocite{2008APG}
 \nocite{géron2019hands}
