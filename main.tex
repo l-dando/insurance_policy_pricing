@@ -11,7 +11,7 @@
 
 \pagenumbering{roman}
 
-\title{GLMs within Insurance Policy Pricing}
+\title{Insurance Policy Pricing}
 \author{Luke Dando}
 \date{\today}
 
@@ -22,15 +22,132 @@
 \pagebreak
 \pagenumbering{arabic}
 
-\section{What is risk?}
+
+\section{Risk}
+\subsection{What is risk?}
 Risk is the chance that something harmful or unexpected could occur regarding a held policy. This might involve loss, theft, or damage of valuable property and belongings, or it may involve someone being injured. From a statistical point-of-view risk can be defined as:
 \begin{equation}
     \tau = \mathbb{E}\left[\frac{L}{e}\right].
 \end{equation}
 Here, $L$ is the loss and $e$ is the exposure of the policy. If we now assume that the frequency of a claim is independent from the severity of it, we find:
 \begin{align}
-    \tau &= \mathbb{E}\left[\frac{L}{e}\right] \\
-    &= \mathbb{E}\left[\left.\frac{L}{N}\right\vert\right]
+    \tau &= \mathbb{E}\left[\frac{L}{e}\right], \\
+    &= \mathbb{E}\left[\left.\frac{L}{N}\right\vert N>0\right]\cdot\mathbb{E}\left[\frac{N}{e}\right], \\
+    &= \mathbb{E}[F]\cdot\mathbb{E}[S]],
 \end{align}
+where $N$ is the number of claims, $S$ is the severity (or size) of the claim and $F$ is the claim frequency.\\
+This forms the basis of how our burn costs are set when defining our technical prices.
+
+\section{Linear Models}
+\subsection{Introducing the problem}
+GLMs are generalized forms of linear models, so in order to understand them it would be ideal to first review classic linear models through an example. \\
+Both these models have the same purpose: to determine the relationship between an observed response variable, $Y$, and predictor variables $X$. For example, let there be a total of $4$ predictor variables: we then define $Y$ as
+\begin{equation}
+    Y = \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \beta_4X_4 + \epsilon.
+\end{equation}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|}
+\cline{2-3}
+                             & Urban & Rural \\ \hline
+\multicolumn{1}{|l|}{Male}   & 800   & 500   \\ \hline
+\multicolumn{1}{|l|}{Female} & 400   & 200   \\ \hline
+\end{tabular}
+    \caption{Covariances for linear model example.}
+    \label{fig:covariances_example}
+\end{table}
+
+Here, $\epsilon$ is an error term, usually Normally distributed with mean zero and variance $\sigma^2$ (often written as $\epsilon~\sim~\mathcal{N}(0,\sigma^2)$). Our covariates will be representing male ($X_1$), female ($X_2$), urban ($X_3$) and rural ($X_4$). These and their respective values can be seen in table~\ref{fig:covariances_example}.\\
+The problem here is that, with as many parameters as there are combinations of rating factor levels being considered and a linear dependency between the four, the model is not uniquely defined. In order to do so, we remove one of these parameters from our model, leaving us with
+\begin{equation}
+    Y = \beta_1X_1 + \beta_2X_2 + \beta_3X_3  + \epsilon. \label{eq:linear_model_1}
+\end{equation}
+We can express our observations as the following:
+\begin{align}
+    Y_1 &= 800 = \beta_1 + 0 + \beta_3 + \epsilon_1;\\
+    Y_2 &= 500 = \beta_1 + 0 + 0 + \epsilon_2;\\
+    Y_3 &= 400 = 0 + \beta_2 + \beta_3 + \epsilon_3;\\
+    Y_4 &= 200 = \beta_2 + 0 + \epsilon_4.
+\end{align}
+We then want to find the best values for $\beta$, which we do so through minimizing the sum of squared errors (SSE):
+\begin{align}
+    SSE &= \epsilon_1^2 + \epsilon_2^2 + \epsilon_3^2 + \epsilon_4^2, \\
+    &= (800-\beta_1-\beta_3)^2 + (500-\beta_1)^2 + (400-\beta_2 - \beta_3)^2 + (200-\beta_2)^2.
+\end{align}
+We can minimize this by setting the following system of equations
+\begin{equation}
+    \left.\frac{\partial SSE}{\partial \beta_i}\right\vert_{i=1,2,3} = 0.
+\end{equation}
+This is trivial enough and can be solved to derive:
+\begin{align}
+    \beta_1 = 525,\\
+    \beta_2 = 175,\\
+    \beta_3 = 250.
+\end{align}
+
+\subsection{Vector and Matrix Notation}
+Let $\mathbf{Y}$ be a column vector with components corresponding to the observed values for the response variable:
+\begin{equation}
+    \underline{Y} = \begin{bmatrix} Y_1 \\ Y_2 \\ Y_3 \\ Y_4 \end{bmatrix} = \begin{bmatrix} 800 \\ 500 \\ 400 \\ 200 \end{bmatrix}
+\end{equation}
+Next, let $\underline{X}_1$, $\underline{X}_2$, $\underline{X}_3$ denote the column vectors with components equal to the observed values for the respective indicator variables (eg the $i$\textsuperscript{th} element of $\underline{X}_1$ is $1$ when the $i$\textsuperscript{th} observation is male, and $0$ if female):
+\begin{equation}
+    \underline{X}_1 = \begin{bmatrix} 1 \\ 1 \\ 0 \\ 0 \end{bmatrix},\qquad \underline{X}_2 = \begin{bmatrix} 0 \\ 0 \\ 1 \\ 1 \end{bmatrix},\qquad \underline{X}_3 = \begin{bmatrix} 1 \\ 0 \\ 1 \\ 0 \end{bmatrix}.
+\end{equation}
+We can then finally denote $\underline{\beta}$ and $\underline{\epsilon}$ as
+\begin{equation}
+    \underline{\beta}=\begin{bmatrix} \beta_1 \\ \beta_2 \\ \beta_3 \end{bmatrix},\qquad \underline{\epsilon}=\begin{bmatrix} \epsilon_1 \\ \epsilon_2 \\ \epsilon_3 \\ \epsilon_4 \end{bmatrix}.
+\end{equation}
+The system of equations can now take the form:
+\begin{equation}
+    \underline{Y} = \beta_1\underline{X}_1 + \beta_2\underline{X}_2 + \beta_3\underline{X}_3 + \underline{\epsilon}.
+\end{equation}
+We can further simplify this by aggregating $\underline{X}_1$, $\underline{X}_2$, $\underline{X}_3$ into a single matrix $\mathbf{X}$. This is called the \textbf{design matrix} and would (in this example) be defined as:
+\begin{equation}
+    \mathbf{X} = \begin{bmatrix} 1 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 1 \\ 0 & 1 & 0 \end{bmatrix}.
+\end{equation}
+We now find that the system of equations takes the form
+\begin{equation}
+    \underline{Y} = \mathbf{X}\cdot\underline{\beta} + \underline{\epsilon}.
+\end{equation}
+From this we can determine the two elements required for a linear model
+\begin{enumerate}
+    \item a set of assumptions about the relationship between $\underline{Y}$ and the predictor variables,
+    \item an objective function which is to be optimized in order to solve the problem. It can be shown outside of this material that the parameters which minimize the sum of squared error (SSE) also maximize the likelihood.
+\end{enumerate}
+Finally, we now make three explicit assumptions about the model:
+\begin{itemize}
+    \item \textbf{(LM1)} \textit{Random component}: Each component of \underline{Y} is independent and is Normally distributed. The mean, $\mu_i$, of each component is allowed to differ, but they all have common variance $\sigma^2$; 
+    \item \textbf{(LM2)} \textit{Systematic component}: The $p$ covariates are combined to give the linear predictor $\underline{\eta}$:
+\begin{equation}
+    \underline{\eta} = \mathbf{X}\cdot\underline{\beta};
+\end{equation}
+\item \textbf{(LM3)} \textit{Link function}: The relationship between the random and systematic components is specified via a link function. In the linear model the link function is equal to the identity function so that:
+\begin{equation}
+    \mathbb{E}[\underline{Y}] \equiv \underline{\mu} = \underline{\eta}.
+\end{equation}
+\end{itemize}
+
+\section{Generalized Linear Model}
+A GLM allows for a non-linear dependence through what's called a link function, $g$:
+\begin{equation}
+    \mathbb{E}[\mathbf{Y}] = g^{-1}(\mathbf{X}\cdot\mathbf{\beta}).
+\end{equation}
+Here, $Y$ is the dependent variable, $X$ the independent variables and $\beta$ the parameters that are fitted through regression. 
+\subsection{Assumptions}
+There are three main assumptions that will form the foundation of our model building:
+\begin{itemize}
+    \item \textbf{Policy independence:} For $n$ considered policies, $X_1,\ldots,X_n$ are independent where $X_i$ denotes the response for policy $i$.\\
+    There are some situations that obviously don't abide by this assumption (two Hastings Direct customers claiming against one another), but the effect of neglecting this should be small.
+    \item \textbf{Time independence:} Consider $n$ disjoint time intervals. For any response type, let $X_i$ denote the response in time interval $i$. Then $X_1\ldots,X_n$ are independent.\\
+    This essentially states that any amount of claims made in one time interval will not directly influence the number made in another. Although not entirely true, again it's a reasonable enough assumption to make in order to help simplify the calculations needed to create the statistical model.
+    \item \textbf{Homogeneity:} Consider any two policies with the same exposure and the same 
+\end{itemize}
+
+\nocite{2008APG}
+\nocite{géron2019hands}
+\nocite{GLM_basics}
+\printbibliography
 
 \end{document}
