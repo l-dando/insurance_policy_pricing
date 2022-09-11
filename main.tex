@@ -81,12 +81,12 @@ We can minimize this by setting the following system of equations
 \end{equation}
 This is trivial enough and can be solved to derive:
 \begin{align}
-    \beta_1 = 525,\\
+    \beta_1 = 525,\\ \label{eq:simp1}
     \beta_2 = 175,\\
-    \beta_3 = 250.
+    \beta_3 = 250.\label{eq:simp3}
 \end{align}
 
-\subsection{Vector and Matrix Notation}
+\subsection{Vector and Matrix Notation}\label{sec:vec_not}
 Let $\mathbf{Y}$ be a column vector with components corresponding to the observed values for the response variable:
 \begin{equation}
     \underline{Y} = \begin{bmatrix} Y_1 \\ Y_2 \\ Y_3 \\ Y_4 \end{bmatrix} = \begin{bmatrix} 800 \\ 500 \\ 400 \\ 200 \end{bmatrix}
@@ -111,7 +111,9 @@ We now find that the system of equations takes the form
 \begin{equation}
     \underline{Y} = \mathbf{X}\cdot\underline{\beta} + \underline{\epsilon}.
 \end{equation}
-From this we can determine the two elements required for a linear model
+
+\subsection{Assumptions}
+From the vectorized forms, we can determine the two elements required for a linear model
 \begin{enumerate}
     \item a set of assumptions about the relationship between $\underline{Y}$ and the predictor variables,
     \item an objective function which is to be optimized in order to solve the problem. It can be shown outside of this material that the parameters which minimize the sum of squared error (SSE) also maximize the likelihood.
@@ -144,6 +146,190 @@ There are three main assumptions that will form the foundation of our model buil
     This essentially states that any amount of claims made in one time interval will not directly influence the number made in another. Although not entirely true, again it's a reasonable enough assumption to make in order to help simplify the calculations needed to create the statistical model.
     \item \textbf{Homogeneity:} Consider any two policies with the same exposure and the same 
 \end{itemize}
+
+\subsection{Examples}
+We will solve simple examples using the same observations previously discussed in sec.~(\ref{sec:vec_not}). The general procedure for solving a GLM involves the following:
+\begin{enumerate}
+    \item Specify the matrix $\mathbf{X}$ and the vector of parameters $\underline{\beta}$;
+    \item Choose the error structure and link function;
+    \item Identify the log-likelihood function;
+    \item Take the logarithm to convert the product of many terms into a sum;
+    \item Maximize the logarithm of the likelihood function;
+    \item Compute the predicted values.
+\end{enumerate}
+We will follow the following models:
+\begin{itemize}
+    \item Normal error structure with an identity link function.
+    \item Poisson error structure with a log link function.
+    \item Gamma error structure with an inverse link function.
+\end{itemize}
+Note that for these examples, the prior weights ($\underline{\omega}$) and the offset term ($\underline{\xi}$) are set to $1$ and $0$ respectively in order to simplify these calculations.
+
+
+
+
+\subsubsection{Normal error structure with identity link function}
+This is a good introductory example as it also shows where the link is between the $SSE$ and the likelihood function falls with regards to the classic linearization model. \\
+The predicted values in this example will take the following form:
+\begin{equation}
+    \mathbb{E}[\underline{Y}] = g^{-1}(X\cdot \underline{\beta}) = \begin{bmatrix} g^{-1}(\beta_1 + \beta_3) \\ g^{-1}(\beta_1) \\ g^{-1}(\beta_2 + \beta_3) \\ g^{-1}(\beta_2) \end{bmatrix} = \begin{bmatrix} \beta_1 + \beta_3 \\ \beta_1 \\ \beta_2 + \beta_3 \\ \beta_2 \end{bmatrix}.
+\end{equation}
+Next, we can define our density function $f$ using our prior assumptions that the mean is $\mu$ and our variance is $\sigma^2$:
+\begin{equation}
+    f(y;\,\mu,\sigma^2) = \exp{\left\{ -\frac{(y_i-\mu_i)^2}{2\sigma^2}-\frac{1}{2}\ln{(2\pi\sigma^2)} \right\}}.
+\end{equation}
+Our likelihood function is then
+\begin{equation}
+    L(y;\,\mu,\sigma^2) = \prod_{i=1}^n\exp{\left\{ -\frac{(y_i-\mu_i)^2}{2\sigma^2}-\frac{1}{2}\ln{(2\pi\sigma^2)} \right\}}.
+\end{equation}
+We know that maximizing the likelihood function is equivalent to maximizing the log-likelihood function:
+\begin{equation}
+    \log(L(y;\,\mu,\sigma^2)) = l(y;\,\mu,\sigma^2) = \log\left(\prod_{i=1}^n\exp{\left\{ -\frac{(y_i-\mu_i)^2}{2\sigma^2}-\frac{1}{2}\ln{(2\pi\sigma^2)} \right\}}\right).\label{eq:log_like}
+\end{equation}
+We can use our fundamental laws of indices and products/summations to adapt 
+\begin{equation}
+    \prod_{i=1}^n e^{x_i} = e^{x_1}\cdot e^{x_2}\cdot\ldots\cdot e^{x_n} = e^{x_1+x_2+\ldots x_n} = e^{\sum_{i=1}^n x_i},
+\end{equation}
+and apply it to our log-likelihood found in eq.~(\ref{eq:log_like}). This gives us
+\begin{equation}
+    l(y;\,\mu,\sigma^2) = \sum_{i=1}^n -\frac{(y_i-\mu_i)^2}{2\sigma^2}-\frac{1}{2}\ln{(2\pi\sigma^2)}.
+\end{equation}
+Here, we insert our link function (identity link function in this case), $\mu_{ij}=\sum_jX_{ij}\beta_j$, to find
+\begin{equation}
+    l(y;\,\mu,\sigma^2) = \sum_{i=1}^n -\frac{\left(y_i-\sum_j X_{ij}\beta_j\right)^2}{2\sigma^2}-\frac{1}{2}\ln{(2\pi\sigma^2)}.
+\end{equation}
+We now expand the right hand side in order to observe
+\begin{align}
+    l(y;\,\mu,\sigma^2) &= -\frac{(800-(\beta_1+\beta_3))^2}{2\sigma^2} -\frac{(500-\beta_1)^2}{2\sigma^2}-\frac{(400-(\beta_2+\beta_3))^2}{2\sigma^2}-\frac{(200-\beta_2)^2}{2\sigma^2} - 2\ln(2\pi\sigma^2), \\
+    l^*(y;\,\mu,\sigma^2) &= -\frac{(800-(\beta_1+\beta_3))^2}{2\sigma^2} -\frac{(500-\beta_1)^2}{2\sigma^2}-\frac{(400-(\beta_2+\beta_3))^2}{2\sigma^2}-\frac{(200-\beta_2)^2}{2\sigma^2},
+\end{align}
+which is up to that constant we ``removed'' ($2\ln(2\sigma^2)$).\\
+To maximize $l^*$, we take derivatives with respect to $\beta_1$, $\beta_2$ and $\beta_3$ and then setting them to zero.
+\begin{align}
+    \frac{\partial l^*}{\partial \beta_1} &= 0 \implies \beta_1 + \beta_3 + \beta_1 = 800+500+1300; \\
+    \frac{\partial l^*}{\partial \beta_2} &= 0 \implies \beta_2 + \beta_3 + \beta_2 = 400 + 200 = 600\\
+    \frac{\partial l^*}{\partial \beta_3} &= 0 \implies \beta_1 + \beta_3 + \beta_2 + \beta_3 = 800+400 = 1200.
+\end{align}
+You can now see how these equations are identical to those that would be found in the simple linear model. These again are solved to derive:
+\begin{align}
+    \beta_1 = 525; \\
+    \beta_2 = 175; \\
+    \beta_3 = 250.
+\end{align}
+These are the same as the solutions found in eq.~(\ref{eq:simp1}-\ref{eq:simp3}). This in turn produces the following predicted values:
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|}
+\cline{2-3}
+                             & Urban & Rural \\ \hline
+\multicolumn{1}{|l|}{Male}   & 775   & 525   \\ \hline
+\multicolumn{1}{|l|}{Female} & 425   & 175   \\ \hline
+\end{tabular}
+    \caption{Predicted values using the Normal error structure with identity link function.}
+    \label{fig:covariances_example_1}
+\end{table}
+
+\subsubsection{The Poisson error structure with a logarithmic link function}
+For our Poisson model, we begin with our predicted values:
+\begin{equation}
+    \mathbb{E}[\underline{Y}] = g^{-1}(X\cdot \underline{\beta}) = \begin{bmatrix} g^{-1}(\beta_1 + \beta_3) \\ g^{-1}(\beta_1) \\ g^{-1}(\beta_2 + \beta_3) \\ g^{-1}(\beta_2) \end{bmatrix} = \begin{bmatrix} e^{\beta_1 + \beta_3} \\ e^{\beta_1} \\ e^{\beta_2 + \beta_3} \\ e^{\beta_2} \end{bmatrix}.
+\end{equation}
+Using the Poisson distribution density function  ($f(y;\,\mu)=e^{-\mu}\mu^y/y!$), we can introduce the log-likelihood function as
+\begin{equation}
+    l(y;\,\mu) = \sum_{i=1}^n \ln f(y;\,\mu) = \sum_{i=1}^n-\mu_i + y_i\ln\mu_i-\ln(y_i!).
+\end{equation}
+We then introduce the link function which in this case is the logarithmic link function $\mu_i = \exp{(\sum_j X_{ij}\beta_j)}$. This reduces the log-likelihood function to
+\begin{equation}
+    l(y;\,e^{X\beta}) = \sum_{i=1}^n-\exp{(\sum_j X_{ij}\beta_j)} + y_i\sum_j X_{ij}\beta_j-\ln(y_i!).
+\end{equation}
+We can (however tedious) expand this into
+\begin{align}
+    l(y;\,\mu) = &-e^{(\beta_1+\beta_3)}+800\cdot(\beta_1+\beta_3)-\ln{800!}-e^{\beta_1} + 500\cdot\beta_1 - \ln{500!} \nonumber \\ &\quad- e^{(\beta_2+\beta_3)}+400\cdot (\beta_2+\beta_3)-\ln{400!} - e^{\beta_2}+200\cdot{\beta_2}-\ln{200!}.
+\end{align}
+Ignoring the constant, the following function is to be maximized:
+\begin{equation}
+    l^*(y;\,\mu) = -e^{(\beta_1+\beta_3)}+800\cdot(\beta_1+\beta_3)-e^{\beta_1} + 500\cdot\beta_1- e^{(\beta_2+\beta_3)}+400\cdot (\beta_2+\beta_3) - e^{\beta_2}+200\cdot{\beta_2}.
+\end{equation}
+To maximize $l^*$, the derivatives with respect to $\beta_{1,2,3}$ are set to zero and the following three equations are derived:
+\begin{align}
+    \frac{\partial l^*}{\partial\beta_1} &= 0 \implies e^{\beta_1}\cdot(e^{\beta_3}+1) = 1300,\\
+    \frac{\partial l^*}{\partial\beta_2} &= 0 \implies e^{\beta_2}\cdot(e^{\beta_3}+1) = 600,\\
+    \frac{\partial l^*}{\partial\beta_3} &= 0 \implies e^{\beta_3}\cdot(e^{\beta_1}+e^{\beta_2}) = 1200.
+\end{align}
+We can solve this system of equations to derive the following parameter estimates:
+\begin{align}
+    \beta_1 = 6.1716, \\
+    \beta_2 = 5.3984, \\
+    \beta_3 = 0.5390,
+\end{align}
+which in turn produces the following predicted values:
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|}
+\cline{2-3}
+                             & Urban & Rural \\ \hline
+\multicolumn{1}{|l|}{Male}   & 821.1   & 479.0   \\ \hline
+\multicolumn{1}{|l|}{Female} & 378.9   & 221.1   \\ \hline
+\end{tabular}
+    \caption{Predicted values using the Poisson error structure with logarithmic link function.}
+    \label{fig:covariances_example_2}
+\end{table}
+
+\subsubsection{The Gamma error structure with an inverse link function}
+A Gamma distribution is substantially more difficult that the prior two examples, so feel free to skip it if it is out of the scope of your prior knowledge. \\
+For the Gamma error structure, the predicted values take the form:
+\begin{equation}
+    \mathbb{E}[\underline{Y}] = g^{-1}(X\cdot \underline{\beta}) = \begin{bmatrix} g^{-1}(\beta_1 + \beta_3) \\ g^{-1}(\beta_1) \\ g^{-1}(\beta_2 + \beta_3) \\ g^{-1}(\beta_2) \end{bmatrix} = \begin{bmatrix} (\beta_1 + \beta_3)^{-1} \\ (\beta_1)^{-1} \\ (\beta_2 + \beta_3)^{-1} \\ (\beta_2)^{-1} \end{bmatrix}.
+\end{equation}
+The gamma error structure has the following density function:
+\begin{equation}
+    f(x;\,\mu,\phi) = \frac{x^{-1}}{\Gamma(1/\phi)}\left( \frac{x}{\mu\phi} \right)^{1/\phi}e^{\left( -\frac{x}{\mu\phi} \right)}.
+\end{equation}
+It's log-likelihood function is derived as 
+\begin{equation}
+    l(x;\,\mu,\phi) = \sum_{i=1}^n\frac{1}{\phi}\left( \ln{\frac{x_i}{\mu_i}} - \frac{x_i}{\mu_i} \right)-\ln{x_i} - \frac{\ln{\phi}}{\phi} - \ln{\Gamma\left( \frac{1}{\phi} \right)}.
+\end{equation}
+We can then introduce our inverse link function, $\mu_i = 1/(\sum_j X_{ij}\beta_j)$, to reduce the log-likelihood function to
+\begin{equation}
+    l(x;\,1/X\beta,\phi) = \sum_{i=1}^n \frac{1}{\phi}\left( \ln{\left( x_i\cdot\sum_{j=1}^p X_{ij}\beta_j \right)}-x_i\cdot\sum_{j=1}^p X_{ij}\beta_j \right)-\ln{x_i} -\frac{\ln{\phi}}{\phi} - \ln{\Gamma\left( \frac{1}{\phi} \right)}.
+\end{equation}
+This is then expanded to
+\begin{align}
+    l(x;\,\mu) = &\frac{1}{\phi}(\ln{(800\cdot(\beta_1+\beta_3))} - 800\cdot(\beta_1+\beta_3)) - \ln{800} - \frac{\ln{\phi}}{\phi} - \ln{\Gamma \left( \frac{1}{\phi} \right)} \nonumber \\
+    &\quad+ \frac{1}{\phi}(\ln{(500\cdot(\beta_1))} - 500\cdot(\beta_1)) - \ln{500} - \frac{\ln{\phi}}{\phi} - \ln{\Gamma \left( \frac{1}{\phi} \right)} \nonumber \\
+    &\quad+ \frac{1}{\phi}(\ln{(400\cdot(\beta_2+\beta_3))} - 400\cdot(\beta_2+\beta_3)) - \ln{400} - \frac{\ln{\phi}}{\phi} - \ln{\Gamma \left( \frac{1}{\phi} \right)} \nonumber \\
+    &\quad+ \frac{1}{\phi}(\ln{(200\cdot(\beta_2))} - 200\cdot(\beta_2)) - \ln{200} - \frac{\ln{\phi}}{\phi} - \ln{\Gamma \left( \frac{1}{\phi} \right)}.
+\end{align}
+If we again ignore the constant terms (after multiplying by $\phi$), we then maximize the following function:
+\begin{align}
+    l^*(x;\,\mu) = &\ln{(800\cdot(\beta_1+\beta_3))} - 800\cdot(\beta_1+\beta_3) + 
+    \ln{(500\cdot\beta_1)} - 500\cdot\beta_1) \nonumber\\
+    &\quad+ \ln{(400\cdot(\beta_2+\beta_3))} - 400\cdot(\beta_2+\beta_3) + \ln{(200\cdot\beta_2)} - 200\cdot\beta_2.
+\end{align}
+To maximize $l^*$, the derivatives with respect to $\beta_{1,2,3}$ are set to zero and the following three equations are derived:
+\begin{align}
+    \frac{\partial l^*}{\partial\beta_1} &= 0 \implies \frac{1}{\beta_1+\beta_3}+\beta_1 = 1300,\\
+    \frac{\partial l^*}{\partial\beta_2} &= 0 \implies \frac{1}{\beta_2+\beta_3}+\frac{1}{\beta_2}=600,\\
+    \frac{\partial l^*}{\partial\beta_3} &= 0 \implies \frac{1}{\beta_1+\beta_3}+\frac{1}{\beta_2+\beta_3}=1200.
+\end{align}
+Solving these gives the following:
+\begin{align}
+    \beta_1 &= 0.00223804,\\
+    \beta_2 &= 0.00394964,\\
+    \beta_3 &= -0.00106601,
+\end{align}
+which results in the following predicted values:
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|}
+\cline{2-3}
+                             & Urban & Rural \\ \hline
+\multicolumn{1}{|l|}{Male}   & 853.2   & 446.8   \\ \hline
+\multicolumn{1}{|l|}{Female} & 346.8   & 253.2   \\ \hline
+\end{tabular}
+    \caption{Predicted values using the Gamma error structure with inverse link function.}
+    \label{fig:covariances_example_3}
+\end{table}
 
 \nocite{2008APG}
 \nocite{géron2019hands}
