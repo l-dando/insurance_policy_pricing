@@ -331,6 +331,15 @@ which results in the following predicted values:
     \label{fig:covariances_example_3}
 \end{table}
 
+\subsection{The Tweedie Distribution}
+Modelling premiums can often be problematic, with one main problem being the high frequency of no-claims causing a large spike at zero and a wide range of amounts following on from this. May other more commonly taught distributions don't accurately account for this. In order to understand how this distribution is derived, we must break down what these distributions are attempting to model.
+
+We essentially want to model the number of claims received, $N$, against the size of these claims, $Z_i$. Respectively, these can be accurately modelled through a Poisson distribution with mean $\lambda_i w_i$ ($N\sim P(\lambda_i w_i)$) and a gamma distribution with mean $\tau_i = \alpha\beta_i$ and shape parameter $\alpha$ ($\beta$ represents a rate parameter of our distribution). Therefore, we define our random variable $Z$ as the following:
+\begin{equation}
+    Z = \left\{ \begin{matrix} 0, & \text{if }N = 0, \\ \sum_{i=1}^N Z_i, & \text{if }N>0. \end{matrix}\right.
+\end{equation}
+This will evidently take into account the fact that if $N=0$ (No policy claims made), then the claim amount will \textit{also} be zero.
+
 \subsection{Large Datasets and Numerical Techniques}
 As the number of observations being modelled increases, the practicality of finding values of $\underline{\beta}$ which maximize likelihood using an explicit technique becomes less and less. Although there is a general case for solving the GLM problem using an assumed exponential distribution, we will now turn to numerical techniques to aid us in approaching our optimum.
 
