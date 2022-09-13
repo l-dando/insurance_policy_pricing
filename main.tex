@@ -46,11 +46,60 @@ This will become much clearer as you progress through the multiple distributions
 
 Each distribution can (usually) be partitioned into one of two groups: \textit{probability mass functions} or \textit{probability density functions}. It's not a tough task to figure out that they respectively hold values from either a discrete set or continuous set respectively. This detail is very important when it comes to deriving these functions, but for the most part we only need to know this so that we have an idea of what distribution can be used to model what set of data. 
 
-\subsection{Probability Mass Functions}
-Probability mass functions (or PMFs for short)
+\subsection{Continuous Distributions}
+Continuous distributions are represented by probability mass functions (or PDFs for short)
 
-\subsection{Probability Density Functions}
-Probability mass functions (or PDFs for short)
+\subsubsection{Uniform Distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/unipdf.png}
+\caption{Uniform Distribution}
+\end{figure}
+
+Perhaps the simplest of them all, uniform distribution is where the probability of any event that can occur is equally likely to any other. Mathematically speaking, we have
+\begin{equation}
+    f(x) = \frac{1}{B-A},\quad A\leq x \leq B.
+\end{equation}
+The case where $A=0$ and $B=1$ is called the \textbf{standard uniform distribution}.
+
+\subsubsection{Normal Distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/norpdf.png}
+\caption{Standard Normal Distribution} \label{fig:stand_norm_dis}
+\end{figure}
+A normal distribution, also referred to as a Gaussian distribution, is one of the most used commonly used distributions due to what is known as the central limit theorem, as well as its many uses within the sciences. It's function is defined as
+\begin{equation}
+    f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}\left( \frac{x-\mu}{\sigma} \right)^2}.
+\end{equation}
+Here, $\mu$ represents the mean, $\sigma$ is the standard deviation (with the variance being $\sigma^2$). This is usually written in the form of $X\sim N(\mu,\sigma^2)$.
+
+A special case of this distribution is the \textbf{\textit{standard}} normal distribution seen in fig.~(\ref{fig:stand_norm_dis}). We set the variables to $\mu=0$ and $\sigma=1$, which simplifies the equation to
+\begin{equation}
+    f^*(x) = \frac{e^{-x^2/2}}{\sqrt{2\pi}}.
+\end{equation}
+
+\subsubsection{Gamma Distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/gampdf4.png}
+\caption{Several Standard Gamma Distributions} \label{fig:stand_gam_dis}
+\end{figure}
+The Gamma distribution is laid out similarly to the normal distribution as it is a two-parameter model which, when fixed, are important and well used special cases - just like the standard normal distribution. The function itself is defined as:
+\begin{equation}
+    f(x) = \frac{\left( \frac{x-\mu}{\beta} \right)^{\gamma -1}\exp{\left( -\frac{x-\mu}{\beta} \right)}}{\beta\Gamma(\gamma)},\quad x\geq\mu;\, \gamma,\beta>0,
+\end{equation}
+where $\gamma,\,\mu$ and $\beta$ are the shape, location and scale parameters respectively. Found in the denominator is the $\Gamma$ (Gamma) function; this is one of the most used `special' functions, finding it's way into many distributions and complex number equations. It is defined as:
+\begin{equation}
+    \Gamma(\alpha) = \int_0^\infty t^{\alpha-1}e^t\text{ d}t.
+\end{equation}
+As well as being the home of the exponential distribution, Erlang distribution, and chi-square distribution, it also has its own standard distribution just like the normal distribution; defined with $\mu=0$ and $\beta=1$. We can then vary the value of $\gamma$ to get distributions such as those found in fig.~(\ref{fig:stand_gam_dis})
+
+
+\subsection{Discrete Distributions}
+Discrete distributions are represented by probability mass functions (or PMFs for short)
+
+
 
 
 
@@ -64,11 +113,12 @@ Risk is the chance that something harmful or unexpected could occur regarding a 
 \begin{equation}
     \tau = \mathbb{E}\left[\frac{L}{e}\right].
 \end{equation}
-Here, $L$ is the loss and $e$ is the exposure of the policy. If we now assume that the frequency of a claim is independent from the severity of it, we find:
+Here, $L$ is the loss and $e$ is the exposure of the policy. If we now assume that the frequency of a claim is independent from the severity of it (thus inferring $\mathbb{E}[XY] = \mathbb{E}[X]\mathbb{E}[Y]$), we find:
 \begin{align}
     \tau &= \mathbb{E}\left[\frac{L}{e}\right], \\
+    &= \mathbb{E}\left[ \left. \left( \frac{L}{N} \cdot\frac{N}{e} \right) \right\vert N>0 \right], \\
     &= \mathbb{E}\left[\left.\frac{L}{N}\right\vert N>0\right]\cdot\mathbb{E}\left[\frac{N}{e}\right], \\
-    &= \mathbb{E}[F]\cdot\mathbb{E}[S]],
+    &= \mathbb{E}[F]\cdot\mathbb{E}[S],
 \end{align}
 where $N$ is the number of claims, $S$ is the severity (or size) of the claim and $F$ is the claim frequency.\\
 This forms the basis of how our burn costs are set when defining our technical prices.
