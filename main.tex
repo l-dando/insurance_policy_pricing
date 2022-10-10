@@ -8,7 +8,6 @@
 
 \bibliography{references.bib}
 
-
 \pagenumbering{roman}
 
 \title{Insurance Policy Pricing}
@@ -22,6 +21,35 @@
 \pagebreak
 \pagenumbering{arabic}
 
+\section{Averages}
+\subsection{Median}
+The median value is the one that separates the higher half from the lower half of the data. This can also be expressed by defining your list of numbers as ${x_i}$, where $i=1,\,2,\ldots,\,n$ and then choosing $x_{(n+1)/2}$ as your median value if $n$ is even or $\frac{x_{n/2} + x_{(n+1)/2}}{2}$ when odd. 
+\subsection{Mode}
+Mode is used for retrieving the most commonly appearing value of a set. It can be defined generally through the following:
+\begin{equation}
+    \max\{x\},\quad x = \sum_{i=1}^n\left\{\begin{matrix} 1, & x = x_i, \\ 0, & x \neq x_i. \end{matrix}\right.
+\end{equation}
+\subsection{Means}
+\subsubsection{Arithmetic Mean}
+The most commonly mean, often referred to as $\bar{x}$, the arithmetic mean is simply the expected value of an event within a set of events. It is defined by
+\begin{equation}
+    \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i
+\end{equation}
+\subsubsection{Geometric Mean}
+Often used when looking at growth (exponential, varying etc.), geometric growth is a simple variation growth:
+\begin{equation}
+    \sqrt[n]{\prod_{i=1}^n x_i}.
+\end{equation}
+\subsubsection{Harmonic Mean}
+The harmonic mean is often used when trying to obtain the average ratio or rate of a set of data. It is expressed as the reciprocal of the arithmetic mean of the reciprocals of the given set of observables. This is defined mathematically as
+\begin{equation}
+    H = \left( \frac{\sum_{i=1}^n x_i^{-1}}{n} \right)^{-1}.
+\end{equation}
+An extension of this (commonly used in finance for things such as the price-earnings ratio) is the weighted harmonic mean. This allows for assigning greater weight values to high data points than low data points. It is defined as
+\begin{equation}
+    H = \left( \frac{\sum_{i=1}^n w_i x_i^{-1}}{\sum_{i=1}^n w_i}. \right)^{-1}.
+\end{equation}
+This can also be viewed as a more ``general'' form of the harmonic mean, as assigning all values of $w_i=1$, we obtain the formula for the standard harmonic mean.
 
 \section{Distributions}
 A probability distribution function, $p$, indicates the likelihood of an event or outcome. The following notation is generally used to describe said probabilities:
@@ -53,7 +81,7 @@ Continuous distributions are represented by probability mass functions (or PDFs 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/unipdf.png}
-\caption{Uniform Distribution}
+\caption{(Standard) Uniform Distribution}
 \end{figure}
 
 Perhaps the simplest of them all, uniform distribution is where the probability of any event that can occur is equally likely to any other. Mathematically speaking, we have
@@ -93,19 +121,109 @@ where $\gamma,\,\mu$ and $\beta$ are the shape, location and scale parameters re
 \begin{equation}
     \Gamma(\alpha) = \int_0^\infty t^{\alpha-1}e^t\text{ d}t.
 \end{equation}
-As well as being the home of the exponential distribution, Erlang distribution, and chi-square distribution, it also has its own standard distribution just like the normal distribution; defined with $\mu=0$ and $\beta=1$. We can then vary the value of $\gamma$ to get distributions such as those found in fig.~(\ref{fig:stand_gam_dis})
+As well as being the home of the exponential distribution, Erlang distribution, and chi-square distribution, it also has its own standard distribution just like the normal distribution; defined with $\mu=0$ and $\beta=1$. We can then vary the value of $\gamma$ to get distributions such as those found in fig.~(\ref{fig:stand_gam_dis}) using the following updated function:
+\begin{equation}
+    f^*(x) = \frac{x^{\gamma-1}e^{-x}}{\Gamma(\gamma)}.
+\end{equation}
 
+\subsubsection{Exponential distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/exp_pdf.jpg}
+\caption{Exponential Distributions} \label{fig:exp_dis}
+\end{figure}
+Although not seen quite as frequently as the other probability density functions, the exponential distribution still has it's uses. It is defined a
+\begin{equation}
+    f(x) = \frac{1}{\beta} e^{-(x-\mu)/\beta},\quad x\geq\mu;\,\beta>0.
+\end{equation}
+Here, $\mu$ and $\beta$ are the location and scale parameter respectively. Sometimes, you will see the scale parameter instead defined as $\gamma = 1/\beta$. 
 
 \subsection{Discrete Distributions}
 Discrete distributions are represented by probability mass functions (or PMFs for short)
+\subsubsection{Binomial Distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/binomial.jpg}
+\caption{Binomial Distributions} \label{fig:bi_dis}
+\end{figure}
+The first of the two discrete distributions we'll be looking at is the binomial distribution. It is used when there are \textit{exactly} two mutually exclusive outcomes of a trial (heads or tails, $1$ or $0$ etc), each of which are labelled ``success'' or ``failure''. If observing $x$ successes of $N$ trials, each of which as a probability of success $p$, we get the following function:
 
+\begin{equation}
+    P(x;\,p,n) = \begin{pmatrix} n \\ x \end{pmatrix}(p)^x(1-p)^{(n-x)},\quad \text{for }x = 0,1,2,\ldots,n,
+\end{equation}
+where
+\begin{equation}
+    \begin{pmatrix} n \\ x \end{pmatrix} = \frac{n!}{x!(n-x)!}.
+\end{equation}
+The examples in fig.~() are expressed through setting $n=100$ and varying $p$.
 
+\subsubsection{Poisson Distribution}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/poisson.jpg}
+\caption{Poisson Distributions} \label{fig:pois_dis}
+\end{figure}
+The main fundamental difference in approach between this and the binomial distribution is that a Poisson distribution is used to model the number of events withing a given \textit{time} interval. The probability function for this is defined as
+\begin{equation}
+    p(x;\,\lambda) = \frac{e^{-\lambda}\lambda^x}{x!},\quad \text{for }x = 0,1,2,\ldots.
+\end{equation}
+Here, $\lambda$ is the shape parameter which indicates the \textit{average} number of events in the given time interval. How the shape of this distribution changes with this value can be seen in fig.~().
 
+\subsection{The Exponential Family} \label{sec:exp_fam}
+The exponential family, also know as exponential dispersion models (EDMs), are a family of distributions that can be defined from a single general form (\ref{eq:exp_fam}). It is home to many names such as Gaussian, binomial, multinomial, Poisson, gamma and many more. It is also where you can find the Tweedie distribution~(\ref{sec:tweedie}), useful within insurance pricing for its variability between a gamma and Poisson distribution in a compound form. An exponential distribution can be arranged into the following form:
+\begin{equation}
+    f(x\vert \eta) = h(x)\exp{\{ \eta^T T(x)-A(\eta) \}} \label{eq:exp_fam}
+\end{equation}
+The variables found represent the following characteristics:
+\begin{itemize}
+    \item $h(x)$ is the `base measure', expressed completely independently of $\eta$ such that $p(x\vert\eta=0)\propto h(x)$.
+    \item $\eta$ is the natural parameter and is often seen as a function of parameter $\theta$.
+    \item $T(x)$ is called the sufficient statistics as it satisfies a criterion for sufficiency, namely, the density is a product of a factor that does not depend on the parameter ($h$) and a factor that depends only on the sufficient statistic.
+    \item $A(\eta)$ is the log-partition function, or log-normalizer, which is used to allow 
+    the integral of the respective probability density function to be equal to $1$.
+\end{itemize}
+As you will find, the name can be potentially misleading as many functions without any inherent exponential property can make use of the log function to still be placed here.
 
+\subsubsection{Example: Poisson distribution}
+We can first try and use the Poisson distribution to show how one can derive a distribution from this information. Let us define the following:
+\begin{align}
+    h(x) &= \frac{1}{x!} \\
+    \eta &= \log{\lambda} \label{eq:pois_eta}\\
+    T(x) &= x \\
+    A(\eta) &= e^\eta.
+\end{align}
 
-\subsubsection{Normal Distribution}
+Subbing in these parameters to our exponential family function, we get:
+\begin{align}
+    f(x\vert \eta) &= h(x)\exp{\{ \eta^T T(x)-A(\eta) \}} \\
+    &= \frac{1}{x!} \exp{\{x \log{\lambda} - e^\eta\}} \\
+    &= \frac{1}{x!} \exp{\{\log{\lambda^x} - \lambda \}} \\
+    &= \frac{1}{x!}(\lambda^x e^{-\lambda}) \\
+    &= \frac{\lambda^x e^{-\lambda}}{x!}.
+\end{align}
+The substitution used of $e^\eta = \lambda$ comes from a simple manipulation of eq.~(\ref{eq:pois_eta}). This is a discrete case, but let us also give an example of the continuous case.
 
-
+\subsubsection{Example: Gamma distribution}
+We can also use the gamma distribution to show how one can derive a distribution from this information. Let us define the following:
+\begin{align}
+    h(x) &= 1 \\
+    \eta &= \begin{bmatrix} \alpha-1 \\ -\beta \end{bmatrix} \\
+    T(x) &= \begin{bmatrix} \log{x} \\ x \end{bmatrix} \\
+    A(\eta) &= \log{\Gamma(x)} -\alpha\log{\beta}.
+\end{align}
+First, subbing in $h(x)$ trivially simplifies our function. Next, we find that
+\begin{equation}
+    \eta^T T(x) = \begin{bmatrix} \alpha-1 & -\beta \end{bmatrix}\begin{bmatrix} \log{x} \\ x \end{bmatrix} = (\alpha-1)\log{x} - \beta x = \log{x^{\alpha-1}}-\beta{x}.
+\end{equation}
+From here, we can insert $A$
+\begin{align}
+    \eta^T T(x)-A(\eta) = \log{x^{\alpha-1}}-\beta{x} - \log{\Gamma(x)} +\alpha\log{\beta} &=  \log{x^{\alpha-1}}-\beta{x} - \log{\Gamma(x)} + \log{\beta^\alpha}\\
+    &= \log{\left(\frac{ x^{\alpha-1}\beta^\alpha}{\Gamma(\alpha)} \right)}-\beta x.
+\end{align}
+Therefore if we introduce this as the exponent of $e$, we get
+\begin{equation}
+    f(x\vert\eta) = f(x;\,\alpha,\beta) = \frac{\beta^\alpha x^{\alpha-1}e^{-\beta x}}{\Gamma(\alpha)},\quad x>0,\,\alpha,\beta>0.
+\end{equation}
 
 \section{Risk}
 \subsection{What is risk?}
@@ -232,6 +350,24 @@ There are three main assumptions that will form the foundation of our model buil
     \item \textbf{Homogeneity:} Consider any two policies with the same exposure and the same 
 \end{itemize}
 
+\subsection{Link functions}
+A link function is used to map a linear model onto non-linear data. For example, in logistic regression, we want to find the probability of success: $P(Y=1)$. This wouldn't be possible through a linear model as the function isn't bounded by $0$ and $1$, but after log is fit to the linear model, we can now map to the probabilities. The same approach can be applied to distributions of data that can be fit through different link functions. Below in fig.~(\ref{fig:link_fun}) is a table of different link functions.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/link_functions.png}
+\caption{Several Link functions} \label{fig:link_fun}
+\end{figure}
+
+Luckily, if we know the distribution we want it to take, we can find the link function relatively easily so long as it is part of the exponential family. First, we implicitly define what is called the \textit{canonical link} by setting
+\begin{equation}
+    \theta = \eta.
+\end{equation}
+In other words, the link function is defined via $g(\mu) = \theta$, by writing the natural parameter $\theta$ in terms of $\mu$.
+
+This value of $\eta$ is the same as what we referred to back in sec.~\ref{sec:exp_fam}, and many tables can be found online (Wikipedia has a well-populated one) that separate out the variables required to express many distributions in their exponential form, easily isolating $\eta$ for us as opposed to deriving it ourselves.
+
+
+
 \subsection{Simple examples}
 We will solve simple examples using the same observations previously discussed in sec.~(\ref{sec:vec_not}). The general procedure for solving a GLM involves the following:
 \begin{enumerate}
@@ -253,7 +389,7 @@ Note that for these examples, the prior weights ($\underline{\omega}$) and the o
 
 
 
-\subsubsection{Normal error structure with identity link function}
+\subsubsection{Normal error structure with identity link function} \label{sec:ex_norm}
 This is a good introductory example as it also shows where the link is between the $SSE$ and the likelihood function falls with regards to the classic linearization model. \\
 The predicted values in this example will take the following form:
 \begin{equation}
@@ -286,7 +422,7 @@ Here, we insert our link function (identity link function in this case), $\mu_{i
 We now expand the right hand side in order to observe
 \begin{align}
     l(y;\,\mu,\sigma^2) &= -\frac{(800-(\beta_1+\beta_3))^2}{2\sigma^2} -\frac{(500-\beta_1)^2}{2\sigma^2}-\frac{(400-(\beta_2+\beta_3))^2}{2\sigma^2}-\frac{(200-\beta_2)^2}{2\sigma^2} - 2\ln(2\pi\sigma^2), \\
-    l^*(y;\,\mu,\sigma^2) &= -\frac{(800-(\beta_1+\beta_3))^2}{2\sigma^2} -\frac{(500-\beta_1)^2}{2\sigma^2}-\frac{(400-(\beta_2+\beta_3))^2}{2\sigma^2}-\frac{(200-\beta_2)^2}{2\sigma^2},
+    l^*(y;\,\mu,\sigma^2) &= -\frac{(800-(\beta_1+\beta_3))^2}{2\sigma^2} -\frac{(500-\beta_1)^2}{2\sigma^2}-\frac{(400-(\beta_2+\beta_3))^2}{2\sigma^2}-\frac{(200-\beta_2)^2}{2\sigma^2}, \label{eq:ex_MSE0}
 \end{align}
 which is up to that constant we ``removed'' ($2\ln(2\sigma^2)$).\\
 To maximize $l^*$, we take derivatives with respect to $\beta_1$, $\beta_2$ and $\beta_3$ and then setting them to zero.
@@ -416,21 +552,97 @@ which results in the following predicted values:
     \label{fig:covariances_example_3}
 \end{table}
 
-\subsection{The Tweedie Distribution}
+\subsection{The Tweedie Distribution}\label{sec:tweedie}
+
 Modelling premiums can often be problematic, with one main problem being the high frequency of no-claims causing a large spike at zero and a wide range of amounts following on from this. May other more commonly taught distributions don't accurately account for this. In order to understand how this distribution is derived, we must break down what these distributions are attempting to model.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/Tweedie.png}
+\caption{Tweedie Distribution} \label{fig:Tweedie_dis}
+\end{figure}
 
 We essentially want to model the number of claims received, $N$, against the size of these claims, $Z_i$. Respectively, these can be accurately modelled through a Poisson distribution with mean $\lambda_i w_i$ ($N\sim P(\lambda_i w_i)$) and a gamma distribution with mean $\tau_i = \alpha\beta_i$ and shape parameter $\alpha$ ($\beta$ represents a rate parameter of our distribution). Therefore, we define our random variable $Z$ as the following:
 \begin{equation}
     Z = \left\{ \begin{matrix} 0, & \text{if }N = 0, \\ \sum_{i=1}^N Z_i, & \text{if }N>0. \end{matrix}\right.
 \end{equation}
-This will evidently take into account the fact that if $N=0$ (No policy claims made), then the claim amount will \textit{also} be zero.
+This will evidently take into account the fact that if $N=0$ (no policy claims made), then the claim amount will \textit{also} be zero.
 
 \subsection{Large Datasets and Numerical Techniques}
 As the number of observations being modelled increases, the practicality of finding values of $\underline{\beta}$ which maximize likelihood using an explicit technique becomes less and less. Although there is a general case for solving the GLM problem using an assumed exponential distribution, we will now turn to numerical techniques to aid us in approaching our optimum.
 
+\section{Gradient Boosting Models (GBM)}
+\subsection{What is Gradient Boosting?}
+Gradient boosting is a powerful machine learning algorithm, capable of regression, classification and ranking. In fact, it managed to win Track 1 of the Yahoo Learning to Rank Challenge~\cite{GBM}. It uses the trick of combining weak ``learners'' into a single strong learner through iterating.
+
+\subsection{Introduction to notation and approach}
+We will explain this in the setting of the least-squares regression, where the goal is to ``teach'' a model $F$ to predict values of the form $\hat{y}=F(x)$ by minimizing the mean squared error $\frac{1}{n}\sum_i (\hat{y}_i - y_i)^2$, where i indexes over some training set of size $n$. We use actual values of the output variable $y$:
+\begin{itemize}
+    \item $\hat{y}_i =$ the predicted value $F(x_i)$;
+    \item $y_i =$ the observed value;
+    \item $n =$ the number of samples in $y$.
+\end{itemize}
+We consider a gradient boosting algorithm with $M$ stages. At each stage $1\leq m\leq M$ we have some imperfect model $F_m$. For our lower values of $m$, our model will likely return $\hat{y}_i = \bar{y}$, where $\bar{y}$ is the mean of $y$. In order to improve our model, the algorithm adds some new estimator: $h_m(x)$. Thus, 
+\begin{equation}
+    F_{m+1}(x_i) = F_m(x_i) + h_m(x_i) = y_i,
+\end{equation}
+or, equivalently,
+\begin{equation}
+    h_m(x_i) = y_i - F_m(x_i).
+\end{equation}
+What this means is, we can attempt to fit $h_m$ to the residual $y_i - F_m(x_i)$.
+
+If we were to use the mean square error (MSE) loss function, such that
+\begin{equation}
+    L_{MSE} = \frac{1}{n}\sum_{i=1}^n(y_i-F(x_i))^2
+\end{equation}
+we find that the residuals for a given model are proportional to the negative gradient of this, deriving:
+\begin{equation}
+    -\frac{\partial L_{MSE}}{\partial F(x_i)} = \frac{2}{n}(y_i-F(x_i)) = \frac{2}{n}h_m(x_i).
+\end{equation}
+Calculating these gives you something called the \textit{pseudo-residuals}.
+
+\subsection{Loss Functions}
+ Loss functions are a vital part of any GBM - it is used to see if our model is getting closer or further away from the ``solution''. We often see that the mean square error (MSE) is used within linear regression models; but why is that?
+ 
+ First, let us remind ourselves of the appearance of this formula:
+ \begin{equation}
+     L_{MSE} = \frac{1}{n}\sum_{i=1}^n(y_i - F(x_i))^2.
+ \end{equation}
+ If we go back to our examples of GLMs, we may spot this type of series in sec.~\ref{sec:ex_norm}, specifically eq.~(\ref{eq:ex_MSE0}). We can use the information within this example to derive it explicitly.
+ 
+ First, we look at the function of a normal distribution, seen in fig.~(\ref{fig:stand_norm_dis}):
+ \begin{equation}
+     f(y_i\vert x_i;\,\beta_0,\beta_1,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp{\left\{ -\frac{(y_i-(\beta_0 + \beta_1 x_i))^2}{2\sigma^2} \right\}}.
+ \end{equation}
+ Note that for the sake of simplicity, we are reducing the number of parameters $\beta$ from $3$ to $2$. Now, what our model wants to do is find the minimum likelihood of this happening. The likelihood is therefore defined as
+ \begin{equation}
+     L(\beta_0,\beta_1,\sigma^2;Y\vert X) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp{\left\{ -\frac{(y_i-(\beta_0 + \beta_1 x_i))^2}{2\sigma^2} \right\}}.
+ \end{equation}
+We can take the log of both sides and use log rules to now define the log-likelihood as
+\begin{align}
+    L_{\log{}}(\beta_0,\beta_1,\sigma^2;Y\vert X) &= \sum_{i=1}^n  \log{\left( \frac{1}{\sqrt{2\pi\sigma^2}}\exp{\left\{ -\frac{(y_i-(\beta_0 + \beta_1 x_i))^2}{2\sigma^2} \right\}} \right)} \\
+    &= \sum_{i=1}^n \left\{  -\frac{(y_i-(\beta_0 + \beta_1 x_i))^2}{2\sigma^2} \right\} + \log{\left( \frac{1}{\sqrt{2\pi\sigma^2}} \right)} \\
+    &= -\frac{n}{2}\log{(2\pi)} - n\log{(\sigma)} - \frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-(\beta_0 + \beta_1 x_i))^2
+\end{align}
+We then know that $\sigma^2$ is the same for all values, so is considered a constant. Therefore, within a maximization problem, we can ignore it to leave us with
+\begin{equation}
+     L_{\log{}}(\beta_0,\beta_1,\sigma^2;Y\vert X) = - \frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-(\beta_0 + \beta_1 x_i))^2.
+\end{equation}
+We can then remove the negative to now make it a minimization problem (as intended), and a final equation of:
+\begin{equation}
+    L_{neglog} =  \sum_{i=1}^n (y_i-(\beta_0 + \beta_1 x_i))^2.
+\end{equation}
+This is just the sum of square errors. The mean of this is then extracted as
+\begin{equation}
+    \hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^n (y_i-(\beta_0 + \beta_1 x_i))^2,
+\end{equation}
+the MSE.
+
 \nocite{2008APG}
 \nocite{géron2019hands}
 \nocite{GLM_basics}
+\nocite{eng_stat}
 \printbibliography
 
 \end{document}
